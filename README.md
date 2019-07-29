@@ -12,5 +12,5 @@ Unsupported:
 2. Definitions.
 3. $ref
 
-For now only binary is exposed bu soon code will be availabe as well.
+For now only binary is exposed but soon code will be availabe as well.
 I hope this helps someone. Please don't hasitate to raise any issues.
