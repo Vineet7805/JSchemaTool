@@ -27,6 +27,13 @@ In case if double clicking JSchemaTool.Jar couldn't start the pogram.
 2. Try command "java -jar JSchemaTool.jar".
 *make sure command "java -version" returns above 1.8x 64 version 
 
+In case if double clicking JSchemaTool.exe couldn't start the pogram.
+1. Set JAVA_HOME in environment variables.
+2. Try again to start JSchemaTool.
+*make sure command "java -version" returns above 1.8x 64 version 
+
+
+
 Tested on windows 10 with Java 1.8x only.
 
 Binary is also exposed with code.
