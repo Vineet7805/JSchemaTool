@@ -1,6 +1,8 @@
 # JSchemaTool
 This tool is very basic which supports few very powerful feature for JSON Schema developers.
 
+![](JSchemaTool.gif)
+
 Fetures:
 1. Generate sample JSON payload from JSON schema.
 2. Generate JSON schema from JSON payload.
