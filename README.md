@@ -14,7 +14,7 @@ Unsupported:
 
 Installation:
 
-Plrase download latest version of java for your platform:
+Please download latest version of java for your platform:
 https://adoptopenjdk.net/releases.html
 
 Windows platform:
