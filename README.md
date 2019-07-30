@@ -29,5 +29,5 @@ In case if double clicking JSchemaTool.Jar couldn't start the pogram.
 
 Tested on windows 10 with Java 1.8x only.
 
-For now only binary is exposed but soon code will be availabe as well.
+Binary is also exposed with code.
 I hope this helps someone. Please don't hasitate to raise any issues.
