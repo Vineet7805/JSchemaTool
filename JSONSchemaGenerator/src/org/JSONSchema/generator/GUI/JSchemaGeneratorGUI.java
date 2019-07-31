@@ -388,7 +388,7 @@ public class JSchemaGeneratorGUI extends Composite {
 				jsonWorkspace="";
 				try {
 					newSchema(1);
-					jsonWorkspace="{\n"+jsonWorkspace.replaceAll(","+identifier, "")+"\n}";
+					jsonWorkspace=jsonWorkspace.replaceAll(","+identifier, "");
 			        jsonWorkspace=jsonWorkspace.replaceAll(identifier, "");
 			        //System.out.println(jsonWorkspace);
 			        jsonWorkspace=ImportJSON.beautify(jsonWorkspace);
@@ -426,7 +426,11 @@ public class JSchemaGeneratorGUI extends Composite {
 							item.setText(egIndex, "Example");
 							item.setText(enumIndex, "enum1,enum2");
 						}else {
-							TreeItem item = new TreeItem(selItem.getParentItem(), SWT.FULL_SELECTION);
+							TreeItem item = null;
+							if(selItem.getParentItem()!=null)
+								item=new TreeItem(selItem.getParentItem(), SWT.FULL_SELECTION);
+							else
+								item=new TreeItem(tree, SWT.FULL_SELECTION);
 							item.setText(nameIndex, "Name");
 							item.setText(descIndex, "Description");
 							item.setText(titleIndex, "Title");
@@ -488,46 +492,24 @@ public class JSchemaGeneratorGUI extends Composite {
 	private void newSchema(int pad) throws Exception {
 		int count=tree.getItemCount();
 		TreeItem items[]=tree.getItems();
+		appendln("{");
 		for (TreeItem item : items) {
-			String type=item.getText(typeIndex);//type of object
-			if(type.equalsIgnoreCase("object")) {
-				appendln("\n"+ImportJSON.padding(pad)+"\""+item.getText(nameIndex)+"\":{");
-	    		appendln(ImportJSON.padding(pad+1)+"\"type\":\"object\",");
-	    		appendln(ImportJSON.padding(pad+1)+"\"title\":\""+item.getText(titleIndex)+"\",");
-	    		appendln(ImportJSON.padding(pad+1)+"\"description\":\""+item.getText(descIndex)+"\",");
-	    		appendln(ImportJSON.padding(pad+1)+"\"properties\":{");
-	    		newSchema(item, pad+2);
-	    		appendln(ImportJSON.padding(pad+1)+"}");
-	    		append(ImportJSON.padding(pad)+"},");
-			}
-			else if(type.equalsIgnoreCase("array")) {
-				appendln("\n"+ImportJSON.padding(pad)+"\""+item.getText(nameIndex)+"\":{");
-				appendln(ImportJSON.padding(pad+1)+"\"type\":\"array\",");
-				appendln(ImportJSON.padding(pad+1)+"\"title\":\""+item.getText(titleIndex)+"\",");
-				appendln(ImportJSON.padding(pad+1)+"\"description\":\""+item.getText(descIndex)+"\",");
-				appendln(ImportJSON.padding(pad+1)+"\"items\":{");
-				appendln(ImportJSON.padding(pad+2)+"\"type\":\"object\",");
-				appendln(ImportJSON.padding(pad+2)+"\"properties\":{");
-				newSchema(item, pad+3);
-				appendln(ImportJSON.padding(pad+2)+"}");
-				appendln(ImportJSON.padding(pad+1)+"}");
-				append(ImportJSON.padding(pad)+"},");
-			}
-			else {
-				appendln("\n"+ImportJSON.padding(pad)+"\""+item.getText(nameIndex)+"\":{");
-	    		appendln(ImportJSON.padding(pad+1)+"\"type\":\""+item.getText(typeIndex)+"\",");
-	    		appendln(ImportJSON.padding(pad+1)+"\"title\":\""+item.getText(titleIndex)+"\",");
-	    		appendln(ImportJSON.padding(pad+1)+"\"description\":\""+item.getText(descIndex)+"\",");
-	    		appendln(ImportJSON.padding(pad+1)+"\"example\":\""+item.getText(egIndex)+"\",");
-	    		appendln(ImportJSON.padding(pad+1)+"\"enum\":["+item.getText(enumIndex)+"]");
-	    		append(ImportJSON.padding(pad)+"},");
-			}
+			appendln(ImportJSON.padding(pad)+"\""+item.getText(nameIndex)+"\":{");
+			appendln(ImportJSON.padding(pad+1)+"\"type\":\"object\",");
+    		appendln(ImportJSON.padding(pad+1)+"\"title\":\""+item.getText(titleIndex)+"\",");
+    		appendln(ImportJSON.padding(pad+1)+"\"description\":\""+item.getText(descIndex)+"\",");
+    		appendln(ImportJSON.padding(pad+1)+"\"properties\":{");
+			newSchema(item,pad+1);
+			appendln(ImportJSON.padding(pad+1)+"}");
+    		append(ImportJSON.padding(pad)+"},");
 		}
 		appendln(identifier);
+		appendln("}");
 	}
 	private void newSchema(TreeItem treeItem,int pad) throws Exception{
-		int count=treeItem.getItemCount();
-		TreeItem items[]=treeItem.getItems();
+		//int count=treeItem.getItemCount();
+		TreeItem items[]=items=treeItem.getItems();
+		
 		for (TreeItem item : items) {
 			String type=item.getText(typeIndex);//type of object
 			if(type.equalsIgnoreCase("object")) {

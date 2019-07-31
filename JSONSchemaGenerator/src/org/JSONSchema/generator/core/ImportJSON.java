@@ -182,6 +182,9 @@ public class ImportJSON {
         		dataMap.put("example",example);
         		localMap.put(key, dataMap);
         		String val="\"Blabla\"";
+        		if(example!=null && example.trim().length()>0){
+        			val=example;
+        		}else
         		switch (type) {
 				case "integer":
 					val="\"1\"";
