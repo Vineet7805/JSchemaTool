@@ -56,7 +56,7 @@ public class JSchemaGeneratorGUI extends Composite {
 	 */
 	public static final Display display = new Display();
 	public static final Shell shell = new Shell(display);
-	int nameIndex=0,titleIndex=2,typeIndex=3,descIndex=1,egIndex=4,enumIndex=5;
+	int nameIndex=0,titleIndex=2,typeIndex=3,descIndex=1,egIndex=4,enumIndex=5,formatIndex=6;
 	public static void main(String[] args) {
 		//Display display = new Display();
 		//Shell shell = new Shell(display);
@@ -92,129 +92,10 @@ public class JSchemaGeneratorGUI extends Composite {
 		
 		TabFolder tabFolder = new TabFolder(this, SWT.NONE);
 		
-		TabItem tbtmGenerator = new TabItem(tabFolder, SWT.NONE);
-		tbtmGenerator.setText("Generator");
-		
-		Composite composite = new Composite(tabFolder, SWT.NONE);
-		tbtmGenerator.setControl(composite);
-		composite.setLayout(new GridLayout(2, false));
-		
-		SashForm sashForm_3 = new SashForm(composite, SWT.NONE);
-		
-		Label lblNewLabel = new Label(sashForm_3, SWT.NONE);
-		lblNewLabel.setText("JSON Payload");
-		sashForm_3.setWeights(new int[] {1});
-		
-		SashForm sashForm_4 = new SashForm(composite, SWT.NONE);
-		
-		Label lblNewLabel_1 = new Label(sashForm_4, SWT.NONE);
-		lblNewLabel_1.setText("JSON Schema");
-		sashForm_4.setWeights(new int[] {1});
-		
-		jsonText = new Text(composite, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL | SWT.CANCEL | SWT.MULTI);
-		jsonText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-		
-		schemaText = new Text(composite, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL | SWT.CANCEL | SWT.MULTI);
-		schemaText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-		
-		SashForm sashForm = new SashForm(composite, SWT.NONE);
-		
-		Button generatePayload = new Button(sashForm, SWT.NONE);
-		generatePayload.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				try {
-					String[] text= ImportJSON.generatePayload(schemaText.getText());
-					schemaText.setText(text[0]);
-					jsonText.setText(text[1]);
-					Map<String, Object> map= ImportJSON.schemaMap;
-					//tree.clearAll(false);
-					tree.removeAll();
-					loadSchemaEditor(map, tree);
-				} catch (Exception e1) {
-					if(schemaText.getText()==null || schemaText.getText().length()==0) {
-						new InfoDialogBox(shell, style).open("To generate JSON Payload you need to load JSON Schema first.\n1. Use \"Browse JSON Schema\" button to select JSON Schema file.\nOr\n2. Paste JSON Schema text into \"JSON Schema\" text box.");
-					}else
-					new ErrorDialogBox(shell, style).open(e1);
-				}
-			}
-		});
-		generatePayload.setText("Generate JSON Payload");
-		
-		Button browseJSONPayloadFle = new Button(sashForm, SWT.NONE);
-		browseJSONPayloadFle.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				try {
-					String filePath=openFileDialog();
-					if(filePath !=null) {
-						   System.out.println("You chose to open this file: " + filePath);
-							String[] text= ImportJSON.loadPayload(filePath);
-							schemaText.setText(text[0]);
-							jsonText.setText(text[1]);
-							ImportJSON.generatePayload(schemaText.getText());
-							Map<String, Object> map=ImportJSON.schemaMap;
-							tree.removeAll();
-							loadSchemaEditor(map, tree);
-					}
-				} catch (Exception e2) {
-					new ErrorDialogBox(shell, style).open(e2);
-				}
-				
-			}
-		});
-		browseJSONPayloadFle.setText("Browse JSON Payload");
-		sashForm.setWeights(new int[] {1, 1});
-		SashForm sashForm_1 = new SashForm(composite, SWT.NONE);
-		Button generateSchema = new Button(sashForm_1, SWT.NONE);
-		generateSchema.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				try {
-					String retStr[]=ImportJSON.generateSchema(jsonText.getText());
-					schemaText.setText(retStr[0]);
-					jsonText.setText(retStr[1]);
-					ImportJSON.generatePayload(schemaText.getText());
-					Map<String, Object> map=ImportJSON.schemaMap;
-					tree.removeAll();
-					loadSchemaEditor(map, tree);
-				} catch (Exception e1) {
-					if(jsonText.getText()==null || jsonText.getText().length()==0) {
-						new InfoDialogBox(shell, style).open("To generate JSON Schema you need to load JSON Payload first.\n1. Use \"Browse JSON Payload\" button to select JSON Payload file.\nOr\n2. Paste JSON Payload text into \"JSON Payload\" text box.");
-					}else
-					new ErrorDialogBox(shell, style).open(e1);
-				}
-			}
-		});
-		generateSchema.setText("Generate JSON Schema");
-		
-		Button browseSchemaFile = new Button(sashForm_1, SWT.NONE);
-		browseSchemaFile.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				try {
-					String filePath=openFileDialog();
-					if(filePath !=null) {
-						   System.out.println("You chose to open this file: " + filePath);
-							String[] text= ImportJSON.loadSchema(filePath);
-							Map<String, Object> map=ImportJSON.schemaMap;
-							schemaText.setText(text[0]);
-							jsonText.setText(text[1]);
-							//tree.clearAll(false);
-							tree.removeAll();
-							loadSchemaEditor(map, tree);
-					}
-				} catch (Exception e2) {
-					new ErrorDialogBox(shell, style).open(e2);
-				}
-				
-			}
-		});
-		browseSchemaFile.setText("Browse JSON Schema");
-		sashForm_1.setWeights(new int[] {1, 1});
-		
 		TabItem tbtmEditor = new TabItem(tabFolder, SWT.NONE);
 		tbtmEditor.setText("Editor");
+		
+		Font treeFont = new Font( display, new FontData( "Segoe UI", 10, SWT.NORMAL ) );
 		
 		Composite editorComposite = new Composite(tabFolder, SWT.NONE);
 		tbtmEditor.setControl(editorComposite);
@@ -249,9 +130,8 @@ public class JSchemaGeneratorGUI extends Composite {
 		TreeColumn trclmnEnum = new TreeColumn(tree, SWT.CENTER);
 		trclmnEnum.setWidth(100);
 		trclmnEnum.setText("Enum");
-		Font treeFont = new Font( display, new FontData( "Segoe UI", 10, SWT.NORMAL ) );
 		tree.setFont(treeFont);
-	    tree.addListener(SWT.EraseItem, new Listener() {
+		tree.addListener(SWT.EraseItem, new Listener() {
 		      public void handleEvent(Event event) {
 		        if ((event.detail & SWT.SELECTED) != 0) {
 		          GC gc = event.gc;
@@ -287,10 +167,11 @@ public class JSchemaGeneratorGUI extends Composite {
 		        }
 		      }
 		    });
-    
+		
 	    final TreeEditor editor = new TreeEditor(tree);
-	    editor.horizontalAlignment = SWT.LEFT;
-	    editor.grabHorizontal = true;
+	    
+	    TreeColumn trclmnFormat = new TreeColumn(tree, SWT.NONE);
+	    trclmnFormat.setWidth(100);
 	    
 	    tree.addListener(SWT.MouseDoubleClick, new Listener() {
 	        public void handleEvent(Event event) {
@@ -312,7 +193,7 @@ public class JSchemaGeneratorGUI extends Composite {
 	          if(colInd==typeIndex) {
 		          Combo text = new Combo(tree, SWT.READ_ONLY);
 		          if(item.getItemCount()==0)
-		        	  text.setItems(new String[] {"string", "number", "float", "integer", "object", "array"});
+		        	  text.setItems(new String[] {"string", "number", "float", "integer", "object", "array", "date"});
 		          else
 		        	  text.setItems(new String[] {"object", "array"});
 		  		  //final Text text = new Text(tree, SWT.NONE);
@@ -324,6 +205,12 @@ public class JSchemaGeneratorGUI extends Composite {
 		          text.addFocusListener(new FocusAdapter() {
 		            public void focusLost(FocusEvent event) {
 		              item.setText(colInd,text.getText().toLowerCase());
+		              if(item.getText(formatIndex).trim().length()==0) {
+			              if(text.getText().equals("date"))
+			                	 item.setText(formatIndex,"dd-MM-yyyy HH:mm:ss");
+			                 else
+			                	 item.setText(formatIndex,"");
+		              }
 		              text.dispose();
 		            }
 		          });
@@ -345,11 +232,11 @@ public class JSchemaGeneratorGUI extends Composite {
 		          text.setText(item.getText(colIndex));
 		          text.selectAll();
 		          text.setFocus();
-	
-		          
+
 		          text.addFocusListener(new FocusAdapter() {
 		            public void focusLost(FocusEvent event) {
 		              item.setText(colInd,text.getText());
+		              
 		              text.dispose();
 		            }
 		          });
@@ -358,7 +245,7 @@ public class JSchemaGeneratorGUI extends Composite {
 		            public void keyPressed(KeyEvent event) {
 		              switch (event.keyCode) {
 		              case SWT.CR:
-		                item.setText(colInd,text.getText());
+		            	item.setText(colInd,text.getText());
 		              case SWT.ESC:
 		                text.dispose();
 		                break;
@@ -374,7 +261,7 @@ public class JSchemaGeneratorGUI extends Composite {
 	        }
 	        
 	      });	   
-	      // */
+	    // */
 	    
 		SashForm sashForm_2 = new SashForm(editorComposite, SWT.NONE);
 		sashForm_2.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1));
@@ -467,6 +354,130 @@ public class JSchemaGeneratorGUI extends Composite {
 		btnRemove.setText("Remove");
 		sashForm_2.setWeights(new int[] {1, 1, 1});
 		
+		TabItem tbtmGenerator = new TabItem(tabFolder, SWT.NONE);
+		tbtmGenerator.setText("Generator");
+		
+		Composite composite = new Composite(tabFolder, SWT.NONE);
+		tbtmGenerator.setControl(composite);
+		composite.setLayout(new GridLayout(2, false));
+		
+		SashForm sashForm_3 = new SashForm(composite, SWT.NONE);
+		
+		Label lblNewLabel = new Label(sashForm_3, SWT.NONE);
+		lblNewLabel.setText("JSON Payload");
+		sashForm_3.setWeights(new int[] {1});
+		
+		SashForm sashForm_4 = new SashForm(composite, SWT.NONE);
+		
+		Label lblNewLabel_1 = new Label(sashForm_4, SWT.NONE);
+		lblNewLabel_1.setText("JSON Schema");
+		sashForm_4.setWeights(new int[] {1});
+		
+		jsonText = new Text(composite, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL | SWT.CANCEL | SWT.MULTI);
+		jsonText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+		
+		schemaText = new Text(composite, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL | SWT.CANCEL | SWT.MULTI);
+		schemaText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+		
+		SashForm sashForm = new SashForm(composite, SWT.NONE);
+		
+		Button generatePayload = new Button(sashForm, SWT.NONE);
+		generatePayload.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				try {
+					String[] text= ImportJSON.getInstance().generatePayload(schemaText.getText());
+					schemaText.setText(text[0]);
+					jsonText.setText(text[1]);
+					Map<String, Object> map= ImportJSON.getInstance().schemaMap;
+					//tree.clearAll(false);
+					tree.removeAll();
+					loadSchemaEditor(map, tree);
+				} catch (Exception e1) {
+					if(schemaText.getText()==null || schemaText.getText().length()==0) {
+						new InfoDialogBox(shell, style).open("To generate JSON Payload you need to load JSON Schema first.\n1. Use \"Browse JSON Schema\" button to select JSON Schema file.\nOr\n2. Paste JSON Schema text into \"JSON Schema\" text box.");
+					}else
+					new ErrorDialogBox(shell, style).open(e1);
+				}
+			}
+		});
+		generatePayload.setText("Generate JSON Payload");
+		
+		Button browseJSONPayloadFle = new Button(sashForm, SWT.NONE);
+		browseJSONPayloadFle.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				try {
+					String filePath=openFileDialog();
+					if(filePath !=null) {
+						   System.out.println("You chose to open this file: " + filePath);
+							String[] text= ImportJSON.getInstance().loadPayload(filePath);
+							schemaText.setText(text[0]);
+							jsonText.setText(text[1]);
+							ImportJSON.getInstance().generatePayload(schemaText.getText());
+							Map<String, Object> map=ImportJSON.getInstance().schemaMap;
+							tree.removeAll();
+							loadSchemaEditor(map, tree);
+					}
+				} catch (Exception e2) {
+					new ErrorDialogBox(shell, style).open(e2);
+				}
+				
+			}
+		});
+		browseJSONPayloadFle.setText("Browse JSON Payload");
+		sashForm.setWeights(new int[] {1, 1});
+		SashForm sashForm_1 = new SashForm(composite, SWT.NONE);
+		Button generateSchema = new Button(sashForm_1, SWT.NONE);
+		generateSchema.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				try {
+					String retStr[]=ImportJSON.getInstance().generateSchema(jsonText.getText());
+					schemaText.setText(retStr[0]);
+					jsonText.setText(retStr[1]);
+					ImportJSON.getInstance().generatePayload(schemaText.getText());
+					Map<String, Object> map=ImportJSON.getInstance().schemaMap;
+					tree.removeAll();
+					loadSchemaEditor(map, tree);
+				} catch (Exception e1) {
+					if(jsonText.getText()==null || jsonText.getText().length()==0) {
+						new InfoDialogBox(shell, style).open("To generate JSON Schema you need to load JSON Payload first.\n1. Use \"Browse JSON Payload\" button to select JSON Payload file.\nOr\n2. Paste JSON Payload text into \"JSON Payload\" text box.");
+					}else
+					new ErrorDialogBox(shell, style).open(e1);
+				}
+			}
+		});
+		generateSchema.setText("Generate JSON Schema");
+		
+		Button browseSchemaFile = new Button(sashForm_1, SWT.NONE);
+		browseSchemaFile.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				try {
+					String filePath=openFileDialog();
+					if(filePath !=null) {
+						   System.out.println("You chose to open this file: " + filePath);
+							String[] text= ImportJSON.getInstance().loadSchema(filePath);
+							Map<String, Object> map=ImportJSON.getInstance().schemaMap;
+							schemaText.setText(text[0]);
+							jsonText.setText(text[1]);
+							//tree.clearAll(false);
+							tree.removeAll();
+							loadSchemaEditor(map, tree);
+					}
+				} catch (Exception e2) {
+					new ErrorDialogBox(shell, style).open(e2);
+				}
+				
+			}
+		});
+		browseSchemaFile.setText("Browse JSON Schema");
+		sashForm_1.setWeights(new int[] {1, 1});
+		
+	    editor.horizontalAlignment = SWT.LEFT;
+	    editor.grabHorizontal = true;
+		
 		TabItem tbtmAbout = new TabItem(tabFolder, SWT.NONE);
 		tbtmAbout.setText("About");
 		
@@ -537,11 +548,18 @@ public class JSchemaGeneratorGUI extends Composite {
 			}
 			else {
 				appendln("\n"+ImportJSON.padding(pad)+"\""+item.getText(nameIndex)+"\":{");
-	    		appendln(ImportJSON.padding(pad+1)+"\"type\":\""+item.getText(typeIndex)+"\",");
-	    		appendln(ImportJSON.padding(pad+1)+"\"title\":\""+item.getText(titleIndex)+"\",");
-	    		appendln(ImportJSON.padding(pad+1)+"\"description\":\""+item.getText(descIndex)+"\",");
-	    		appendln(ImportJSON.padding(pad+1)+"\"example\":\""+item.getText(egIndex)+"\",");
-	    		appendln(ImportJSON.padding(pad+1)+"\"enum\":["+item.getText(enumIndex)+"]");
+	    		append(ImportJSON.padding(pad+1)+"\"type\":\""+item.getText(typeIndex)+"\",");
+	    		if(item.getText(titleIndex)!=null && item.getText(titleIndex).trim().length()>0)
+	    			append(ImportJSON.padding(pad+1)+"\n\"title\":\""+item.getText(titleIndex)+"\",");
+	    		if(item.getText(descIndex)!=null && item.getText(descIndex).trim().length()>0)
+	    			append(ImportJSON.padding(pad+1)+"\n\"description\":\""+item.getText(descIndex)+"\",");
+	    		if(item.getText(formatIndex)!=null && item.getText(formatIndex).trim().length()>0)
+	    			append(ImportJSON.padding(pad+1)+"\n\"format\":\""+item.getText(formatIndex)+"\",");
+	    		if(item.getText(egIndex)!=null && item.getText(egIndex).trim().length()>0)
+	    			append(ImportJSON.padding(pad+1)+"\n\"example\":\""+item.getText(egIndex)+"\",");
+	    		if(item.getText(enumIndex)!=null && item.getText(enumIndex).trim().length()>0)
+	    			append(ImportJSON.padding(pad+1)+"\n\"enum\":["+item.getText(enumIndex)+"],");
+	    		appendln(identifier);
 	    		append(ImportJSON.padding(pad)+"},");
 			}
 		}
@@ -552,7 +570,7 @@ public class JSchemaGeneratorGUI extends Composite {
 	    int itemCount = keys.length;
 	    for (int i = 0; i < itemCount; i++) {
 		    TreeItem item = new TreeItem(tree, SWT.FULL_SELECTION);
-		    item.setText(0,keys[i].toString());
+		    item.setText(nameIndex,keys[i].toString());
 		    //item.getCl
 		    if(map.get(keys[i]) instanceof Map)
 		    loadSchemaEditor((Map)map.get(keys[i]), item);
@@ -562,11 +580,12 @@ public class JSchemaGeneratorGUI extends Composite {
 	private void loadSchemaEditor(Map<String, Object> map, TreeItem ti) throws Exception{
 		Object[] keys=map.keySet().toArray();
 	    int itemCount = keys.length;
-	    ti.setText(1, (map.get("description")+"").replace("null", ""));
-	    ti.setText(2, (map.get("title")+"").replace("null", ""));
-	    ti.setText(3, (map.get("type")+"").replace("null", ""));
-	    ti.setText(4, (map.get("example")+"").replace("null", ""));
-	    ti.setText(5, (map.get("enum")+"").replace("null", ""));
+	    ti.setText(descIndex, (map.get("description")+"").replace("null", ""));
+	    ti.setText(titleIndex, (map.get("title")+"").replace("null", ""));
+	    ti.setText(typeIndex, (map.get("type")+"").replace("null", ""));
+	    ti.setText(egIndex, (map.get("example")+"").replace("null", ""));
+	    ti.setText(formatIndex, (map.get("format")+"").replace("null", ""));
+	    ti.setText(enumIndex, (map.get("enum")+"").replace("null", ""));
 	    for (int i = 0; i < itemCount; i++) {
 	    	if(map.get(keys[i]) instanceof Map) {
 		    	TreeItem item = new TreeItem(ti, SWT.FULL_SELECTION);

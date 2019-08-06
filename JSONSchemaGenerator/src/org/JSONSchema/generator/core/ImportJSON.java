@@ -14,9 +14,9 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 
 public class ImportJSON {
-	public static String jsonWorkspace="";
-	public static String identifier="-~-~-~-010-~-~-~";
-	public static Map<String, Object> schemaMap;
+	public String jsonWorkspace="";
+	public static final String identifier="-~-~-~-010-~-~-~";
+	public Map<String, Object> schemaMap;
 	
 	public ImportJSON() {
 		// TODO Auto-generated constructor stub
@@ -25,21 +25,29 @@ public class ImportJSON {
 
  	public static void main(String[] args) throws Exception {
 		//load("D:\\nvme\\data\\Sample.JSON");
-		loadSchema("D:\\nvme\\data\\SampleSchema.JSON");
-		System.out.println(jsonWorkspace);
+ 		
+		String[] jsonWorkspace= new ImportJSON().loadSchema("D:\\nvme\\data\\SampleSchema.JSON");
+		System.out.println(jsonWorkspace[0]);
+		System.out.println(jsonWorkspace[1]);
 	}
- 	
+ 	private static ImportJSON ij=null;
+ 	public static ImportJSON getInstance() {
+ 		if(ij==null)
+ 			 ij=new ImportJSON();
+ 		return ij;
+ 	}
  	
 	
 	public static String beautify(String jsonStr) {
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		JsonParser jp = new JsonParser();
+		//System.out.println(jsonStr);
 		JsonElement je = jp.parse(jsonStr);
 		String prettyJsonString = gson.toJson(je);
 		return prettyJsonString;
 	}
 	
-	public static String[] loadPayload(String fileName) throws Exception {
+	public String[] loadPayload(String fileName) throws Exception {
 		Object obj = new JSONParser().parse(new FileReader(fileName)); 
         JSONObject jo = (JSONObject) obj;
         String org=jo.toJSONString();
@@ -53,7 +61,7 @@ public class ImportJSON {
         return new String[] {beautify(jsonWorkspace),beautify(org)};
 	}
 	
-	public static String[] loadSchema(String fileName) throws Exception {
+	public String[] loadSchema(String fileName) throws Exception {
 		Object obj = new JSONParser().parse(new FileReader(fileName)); 
         JSONObject jo = (JSONObject) obj;
         String org=jo.toJSONString();
@@ -70,7 +78,7 @@ public class ImportJSON {
         return new String[] {beautify(org),beautify(jsonWorkspace)};
 	}
 	
-	public static String[] generatePayload(String schemaStr) throws Exception {
+	public String[] generatePayload(String schemaStr) throws Exception {
 		Object obj = new JSONParser().parse(schemaStr); 
         JSONObject jo = (JSONObject) obj;
         String org=jo.toJSONString();
@@ -88,7 +96,7 @@ public class ImportJSON {
         return new String[] {beautify(org),beautify(jsonWorkspace)};
 	}
 	
-	public static String[] generateSchema(String jStr) throws Exception {
+	public String[] generateSchema(String jStr) throws Exception {
 		Object obj = new JSONParser().parse(jStr); 
 		String org="";
 		JSONObject jo=null;
@@ -111,12 +119,12 @@ public class ImportJSON {
         return new String[] {beautify(jsonWorkspace),beautify(org)};
 	}
 	
-	private static void appendln(String data) {
+	private void appendln(String data) {
 		jsonWorkspace+=data+"\n";
 		//System.out.println(data.replaceAll(","+identifier, "").replaceAll(identifier, ""));
 	}
 	
-	private static void append(String data) {
+	private void append(String data) {
 		jsonWorkspace+=data;
 		//System.out.print(data.replaceAll(","+identifier, "").replaceAll(identifier, ""));
 	}
@@ -128,7 +136,7 @@ public class ImportJSON {
 		return pad;
 	}
 	
-	private static Map<String, Object> generateJsonPayload(JSONObject jo, int root,String parentType) throws Exception {
+	private Map<String, Object> generateJsonPayload(JSONObject jo, int root,String parentType) throws Exception {
 		if(jo==null)
 			return new HashMap<String, Object>();
 		Object[] keys=jo.keySet().toArray();
@@ -140,6 +148,7 @@ public class ImportJSON {
         	String type=(String) keyObj.get("type");
         	String desc=(String) keyObj.get("description");
         	String title=(String) keyObj.get("title");
+        	String format=(String) keyObj.get("format");
         	String example=(String) keyObj.get("example");
         	String enm=(keyObj.get("enum")+"").replace("null", "").trim();
         	if(enm.length()>=2) {
@@ -179,11 +188,12 @@ public class ImportJSON {
         		dataMap.put("title",title);
         		dataMap.put("description",desc);
         		dataMap.put("enum",enm);
+        		dataMap.put("format",format);
         		dataMap.put("example",example);
         		localMap.put(key, dataMap);
         		String val="\"Blabla\"";
         		if(example!=null && example.trim().length()>0){
-        			val=example;
+        			val="\""+example+"\"";
         		}else
         		switch (type) {
 				case "integer":
@@ -211,7 +221,7 @@ public class ImportJSON {
         return localMap;
 	}
 	
-	private static void generateJSONSchema(JSONObject jo, int root) {
+	private void generateJSONSchema(JSONObject jo, int root) {
 		Object[] keys=jo.keySet().toArray();
         for (Object object : keys) {
         	
