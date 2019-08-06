@@ -408,35 +408,35 @@ public class JSchemaGeneratorGUI extends Composite {
 				try {
 					if(tree.getSelection().length<=0) {
 						TreeItem item = new TreeItem(tree, SWT.FULL_SELECTION);
-						item.setText(nameIndex, "Name");
-						item.setText(descIndex, "Description");
-						item.setText(titleIndex, "Title");
+						item.setText(nameIndex, "newElement");
+						item.setText(descIndex, "Double click on any cell to update");
+						item.setText(titleIndex, "Add Title here");
 						item.setText(typeIndex, "string");
-						item.setText(egIndex, "Example");
-						item.setText(enumIndex, "enum1,enum2");
+						item.setText(egIndex, "Add example");
+						item.setText(enumIndex, "example1,example2");
 					}else {
 						final TreeItem selItem = tree.getSelection()[0];
 						String type=selItem.getText(typeIndex);
 						if(type.equalsIgnoreCase("array") ||  type.equalsIgnoreCase("object")) {
 							TreeItem item = new TreeItem(selItem, SWT.FULL_SELECTION);
-							item.setText(nameIndex, "Name");
-							item.setText(descIndex, "Description");
-							item.setText(titleIndex, "Title");
+							item.setText(nameIndex, "newElement");
+							item.setText(descIndex, "Double click on any cell to update");
+							item.setText(titleIndex, "Add Title here");
 							item.setText(typeIndex, "string");
-							item.setText(egIndex, "Example");
-							item.setText(enumIndex, "enum1,enum2");
+							item.setText(egIndex, "Add example");
+							item.setText(enumIndex, "example1,example2");
 						}else {
 							TreeItem item = null;
 							if(selItem.getParentItem()!=null)
 								item=new TreeItem(selItem.getParentItem(), SWT.FULL_SELECTION);
 							else
 								item=new TreeItem(tree, SWT.FULL_SELECTION);
-							item.setText(nameIndex, "Name");
-							item.setText(descIndex, "Description");
-							item.setText(titleIndex, "Title");
+							item.setText(nameIndex, "newElement");
+							item.setText(descIndex, "Double click on any cell to update");
+							item.setText(titleIndex, "Add Title here");
 							item.setText(typeIndex, "string");
-							item.setText(egIndex, "Example");
-							item.setText(enumIndex, "enum1,enum2");
+							item.setText(egIndex, "Add example");
+							item.setText(enumIndex, "example1,example2");
 						}
 					}
 				} catch (Exception e2) {
