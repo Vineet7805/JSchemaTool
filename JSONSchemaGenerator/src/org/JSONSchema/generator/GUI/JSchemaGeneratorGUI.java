@@ -170,12 +170,13 @@ public class JSchemaGeneratorGUI extends Composite {
 		
 	    final TreeEditor editor = new TreeEditor(tree);
 	    
-	    TreeColumn trclmnFormat = new TreeColumn(tree, SWT.NONE);
+	    TreeColumn trclmnFormat = new TreeColumn(tree, SWT.CENTER);
+	    trclmnFormat.setText("Format");
 	    trclmnFormat.setWidth(100);
 	    
 	    tree.addListener(SWT.MouseDoubleClick, new Listener() {
 	        public void handleEvent(Event event) {
-	        	//event.height = 67;
+	          //event.height = 67;
 	          //PointerInfo pi = MouseInfo.getPointerInfo();
 	          //tree.getItem(new Point((int)pi.getLocation().getX(),(int) pi.getLocation().getY()));
 	          //tree.getColumns()[0].get
@@ -190,43 +191,107 @@ public class JSchemaGeneratorGUI extends Composite {
 	          }
 	          final int colInd=colIndex;
 	          
-	          if(colInd==typeIndex) {
-		          Combo text = new Combo(tree, SWT.READ_ONLY);
-		          if(item.getItemCount()==0)
-		        	  text.setItems(new String[] {"string", "number", "float", "integer", "object", "array", "date"});
-		          else
-		        	  text.setItems(new String[] {"object", "array"});
-		  		  //final Text text = new Text(tree, SWT.NONE);
-		          text.setText(item.getText(colIndex).toLowerCase());
+	          if(colInd==formatIndex) {
+	        	  Combo formatCombo = null;
+	        	  String type=item.getText(typeIndex);
+	        	  
+	        	  switch (type) {
+					case "number":
+						formatCombo=new Combo(tree, SWT.READ_ONLY);
+						formatCombo.setItems(new String[] {"", "double", "float"});
+						break;
+					case "string":
+						formatCombo=new Combo(tree, SWT.READ_ONLY);
+						formatCombo.setItems(new String[] {"", "binary", "byte", "password", "email", "uuid", "uri", "hostname", "ipv4", "ipv6"});
+						break;
+					case "integer":
+						formatCombo=new Combo(tree, SWT.READ_ONLY);
+						formatCombo.setItems(new String[] {"", "int32", "int64"});
+						break;
+					case "array":
+						formatCombo=new Combo(tree, SWT.READ_ONLY);
+						formatCombo.setItems(new String[] {""});
+						break;
+					case "object":
+						formatCombo=new Combo(tree, SWT.READ_ONLY);
+						formatCombo.setItems(new String[] {""});
+						break;
+					case "boolean":
+						formatCombo=new Combo(tree, SWT.READ_ONLY);
+						formatCombo.setItems(new String[] {"","1/0", "true/false","TRUE/FALSE","yes/no","YES/NO"});
+						break;
+					case "date":
+						formatCombo=new Combo(tree, SWT.NONE);
+						formatCombo.setTouchEnabled(true);
+						break;
+					default:
+						formatCombo=new Combo(tree, SWT.READ_ONLY);
+						formatCombo.setItems(new String[] {"","Select Type first"});
+						break;
+				  }
+		          formatCombo.setText(item.getText(colIndex).toLowerCase());
 		          //text.selectAll();
-		          text.setFocus();
+		          formatCombo.setFocus();
 	
-		          
-		          text.addFocusListener(new FocusAdapter() {
+		          final Combo fc=formatCombo;
+		          formatCombo.addFocusListener(new FocusAdapter() {
 		            public void focusLost(FocusEvent event) {
-		              item.setText(colInd,text.getText().toLowerCase());
-		              if(item.getText(formatIndex).trim().length()==0) {
-			              if(text.getText().equals("date"))
-			                	 item.setText(formatIndex,"dd-MM-yyyy HH:mm:ss");
-			                 else
-			                	 item.setText(formatIndex,"");
-		              }
-		              text.dispose();
+		              item.setText(colInd,fc.getText().toLowerCase());
+		              fc.dispose();
 		            }
 		          });
 	
-		          text.addKeyListener(new KeyAdapter() {
+		          formatCombo.addKeyListener(new KeyAdapter() {
 		            public void keyPressed(KeyEvent event) {
 		              switch (event.keyCode) {
 		              case SWT.CR:
-		                item.setText(colInd,text.getText().toLowerCase());
+		                item.setText(colInd,fc.getText().toLowerCase());
 		              case SWT.ESC:
-		                text.dispose();
+		                fc.dispose();
 		                break;
 		              }
 		            }
 		          });
-		          editor.setEditor(text, item,colInd);
+		          editor.setEditor(formatCombo, item,colInd);
+	          }else
+	          
+	          if(colInd==typeIndex) {
+		          Combo typeCombo = new Combo(tree, SWT.READ_ONLY);
+		          if(item.getItemCount()==0)
+		        	  typeCombo.setItems(new String[] {"string", "number", "boolean", "integer", "object", "array", "date"});
+		          else
+		        	  typeCombo.setItems(new String[] {"object", "array"});
+		  		  //final Text text = new Text(tree, SWT.NONE);
+		          typeCombo.setText(item.getText(colIndex).toLowerCase());
+		          //text.selectAll();
+		          typeCombo.setFocus();
+		          
+		          typeCombo.addFocusListener(new FocusAdapter() {
+		            public void focusLost(FocusEvent event) {
+		              if(!item.getText(colInd).equalsIgnoreCase(typeCombo.getText())) {
+		            	  item.setText(formatIndex,"");
+			              item.setText(colInd,typeCombo.getText().toLowerCase());
+			              if(item.getText(formatIndex).trim().length()==0) {
+				              if(typeCombo.getText().equals("date"))
+				                	 item.setText(formatIndex,"dd-MM-yyyy HH:mm:ss");
+			              }
+		              }
+		              typeCombo.dispose();
+		            }
+		          });
+	
+		          typeCombo.addKeyListener(new KeyAdapter() {
+		            public void keyPressed(KeyEvent event) {
+		              switch (event.keyCode) {
+		              case SWT.CR:
+		                item.setText(colInd,typeCombo.getText().toLowerCase());
+		              case SWT.ESC:
+		                typeCombo.dispose();
+		                break;
+		              }
+		            }
+		          });
+		          editor.setEditor(typeCombo, item,colInd);
 	          }else {
 		    	  final Text text = new Text(tree, SWT.NONE);
 		          text.setText(item.getText(colIndex));
@@ -426,7 +491,6 @@ public class JSchemaGeneratorGUI extends Composite {
 			}
 		});
 		browseJSONPayloadFle.setText("Browse JSON Payload");
-		sashForm.setWeights(new int[] {1, 1});
 		SashForm sashForm_1 = new SashForm(composite, SWT.NONE);
 		Button generateSchema = new Button(sashForm_1, SWT.NONE);
 		generateSchema.addSelectionListener(new SelectionAdapter() {
