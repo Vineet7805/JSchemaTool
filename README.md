@@ -1,4 +1,4 @@
-# JSchemaTool
+# Moksh
 This tool is very basic which supports few very powerful feature for JSON Schema developers.
 
 ![](JSchemaTool.gif)
